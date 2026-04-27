@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tracklytics</title>
+    <meta name="description" content="A modern daily task tracker and habit streak analytics app.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark">
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo">
+                    <ion-icon name="analytics"></ion-icon>
+                </div>
+                <h1>Tracklytics</h1>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-item active" data-target="dashboard-view">
+                    <ion-icon name="grid-outline"></ion-icon>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-target="tasks-view">
+                    <ion-icon name="list-outline"></ion-icon>
+                    <span>Manage Habits</span>
+                </button>
+                <button class="nav-item" data-target="accounts-view">
+                    <ion-icon name="card-outline"></ion-icon>
+                    <span>Bank Accounts</span>
+                </button>
+                <button class="nav-item" data-target="expenses-view">
+                    <ion-icon name="wallet-outline"></ion-icon>
+                    <span>Expenses</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="mobile-menu-btn">
+                    <ion-icon name="menu-outline"></ion-icon>
+                </div>
+                <h2 id="current-view-title">Dashboard</h2>
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle Dark Mode">
+                    <ion-icon name="sunny-outline" class="sun-icon"></ion-icon>
+                    <ion-icon name="moon-outline" class="moon-icon"></ion-icon>
+                </button>
+            </header>
+
+            <!-- Views -->
+            <div class="view-container">
+                <!-- Dashboard View -->
+                <section id="dashboard-view" class="view active">
+                    <div class="stats-grid">
+                        <div class="stat-card streak-card glass">
+                            <div class="stat-icon">
+                                <ion-icon name="flame"></ion-icon>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Current Streak</h3>
+                                <div class="streak-value"><span id="streak-count">0</span> Days</div>
+                                <p class="stat-subtitle">Keep it up!</p>
+                            </div>
+                        </div>
+                        <div class="stat-card completion-card glass">
+                            <div class="circular-progress">
+                                <svg width="100" height="100" viewBox="0 0 100 100">
+                                    <circle class="bg" cx="50" cy="50" r="40"></circle>
+                                    <circle class="progress" id="completion-circle" cx="50" cy="50" r="40"></circle>
+                                </svg>
+                                <div class="percentage" id="completion-percentage">0%</div>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Today's Progress</h3>
+                                <p class="stat-subtitle" id="completion-text">0/0 Habits Completed</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-split">
+                        <div class="dashboard-tasks-preview">
+                            <div class="section-header">
+                                <h3>Today's Habits</h3>
+                                <span class="date-display" id="today-date-display"></span>
+                            </div>
+                            <div class="task-list" id="dashboard-task-list">
+                                <!-- Today's habit inputs injected here -->
+                            </div>
+                        </div>
+
+                        <div class="analytics-section">
+                            <div class="section-header">
+                                <h3>Habit Analytics</h3>
+                                <div class="chart-controls">
+                                    <select id="habit-select" class="form-select">
+                                        <!-- Habit options injected here -->
+                                    </select>
+                                    <select id="timeframe-select" class="form-select">
+                                        <option value="weekly">Weekly</option>
+                                        <option value="monthly">Monthly</option>
+                                        <option value="yearly">Yearly</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="chart-container glass">
+                                <canvas id="habitChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Manage Habits View -->
+                <section id="tasks-view" class="view">
+                    <div class="tasks-header glass form-card" style="padding: 1.5rem; border-radius: 16px;">
+                        <h3 style="margin-bottom: 1.5rem;">Create New Habit</h3>
+                        <form id="habit-form" class="complex-form">
+                            <div class="form-group full-width">
+                                <label>Habit Name</label>
+                                <input type="text" id="habit-name" placeholder="e.g., Read a book, Walk..." required autocomplete="off">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Tracking Type</label>
+                                    <select id="habit-type" class="form-select">
+                                        <option value="boolean">Simple Checkbox (Yes/No)</option>
+                                        <option value="numeric">Numeric Target (e.g., 5 pages)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group numeric-fields" style="display: none;">
+                                    <label>Daily Target</label>
+                                    <input type="number" id="habit-target" placeholder="e.g., 5" min="0.1" step="any">
+                                </div>
+                                <div class="form-group numeric-fields" style="display: none;">
+                                    <label>Unit</label>
+                                    <input type="text" id="habit-unit" placeholder="e.g., pages, km, liters">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <ion-icon name="add-circle"></ion-icon> Save Habit
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="section-header" style="margin-top: 2rem;">
+                        <h3>Your Active Habits</h3>
+                    </div>
+                    <div class="task-list" id="manage-habit-list">
+                        <!-- Defined habits injected here -->
+                    </div>
+                </section>
+
+                <!-- Bank Accounts View -->
+                <section id="accounts-view" class="view">
+                    <div class="glass form-card" style="padding: 1.5rem; border-radius: 16px;">
+                        <h3 style="margin-bottom: 1.5rem;">Add Bank Account</h3>
+                        <form id="account-form" class="complex-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Bank Name</label>
+                                    <input type="text" id="account-bank" placeholder="e.g., SBI, HDFC" required autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label>Account Label</label>
+                                    <input type="text" id="account-label" placeholder="e.g., Savings, Main" required autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label>Last 4 Digits</label>
+                                    <input type="text" id="account-last4" placeholder="e.g., 1234" maxlength="4" pattern="\d{4}" required autocomplete="off">
+                                </div>
+                                <div class="form-group">
+                                    <label>Initial Balance</label>
+                                    <input type="number" id="account-balance" placeholder="₹ Amount" required>
+                                </div>
+                            </div>    
+                            <button type="submit" class="btn-primary">
+                                <ion-icon name="add-circle"></ion-icon> Add Account
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="section-header" style="margin-top: 2rem;">
+                        <h3>Saved Accounts</h3>
+                    </div>
+                    <div class="task-list" id="account-list">
+                        <!-- Accounts injected here -->
+                    </div>
+                </section>
+
+                <!-- Expenses View -->
+                <section id="expenses-view" class="view">
+                    
+                    <div class="expense-filters glass" style="padding: 1rem 1.5rem; border-radius: 16px; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                        <input type="text" id="expense-search" placeholder="Search notes or categories..." class="form-select" style="flex: 1; min-width: 200px;">
+                        
+                        <select id="expense-date-filter" class="form-select" style="max-width: 200px;">
+                            <option value="all">All Time</option>
+                            <option value="month">This Month</option>
+                            <option value="week">This Week</option>
+                        </select>
+
+                        <select id="expense-filter-bank" class="form-select" style="max-width: 250px;">
+                            <option value="all">All Accounts</option>
+                            <!-- Options injected -->
+                        </select>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card glass">
+                            <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+                                <ion-icon name="today"></ion-icon>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Today's Expenses</h3>
+                                <div class="streak-value" style="background: linear-gradient(135deg, #10b981, #059669); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><span id="today-expense-total">₹0.00</span></div>
+                            </div>
+                        </div>
+                        <div class="stat-card glass">
+                            <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                                <ion-icon name="calendar"></ion-icon>
+                            </div>
+                            <div class="stat-info">
+                                <h3>This Month</h3>
+                                <div class="streak-value" style="background: linear-gradient(135deg, #3b82f6, #2563eb); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"><span id="month-expense-total">₹0.00</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-split" style="margin-bottom: 2rem;">
+                        <div class="glass form-card" style="padding: 1.5rem; border-radius: 16px; display: flex; flex-direction: column;">
+                            <h3 style="margin-bottom: 1rem;">Add Expense</h3>
+                            
+                            <div id="no-accounts-warning" style="display: none; background: rgba(239,68,68,0.1); border: 1px solid var(--danger); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; color: var(--danger);">
+                                <ion-icon name="warning"></ion-icon> You must add at least one Bank Account before logging expenses.
+                            </div>
+
+                            <form id="expense-form" class="complex-form" style="flex:1;">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Amount (₹)</label>
+                                        <input type="number" id="expense-amount" placeholder="0.00" min="0.01" step="0.01" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Date</label>
+                                        <input type="date" id="expense-date" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Bank Account</label>
+                                        <select id="expense-account" class="form-select" required>
+                                            <!-- Options injected -->
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Category</label>
+                                        <select id="expense-category" class="form-select" required>
+                                            <option value="Food">Food & Dining</option>
+                                            <option value="Travel">Travel & Commute</option>
+                                            <option value="Study">Study & Education</option>
+                                            <option value="Entertainment">Entertainment</option>
+                                            <option value="Bills">Bills & Utilities</option>
+                                            <option value="Shopping">Shopping</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Notes</label>
+                                    <input type="text" id="expense-notes" placeholder="Optional notes...">
+                                </div>
+                                <button type="submit" id="btn-add-expense" class="btn-primary" style="background: linear-gradient(135deg, #10b981, #059669); margin-top:auto;">
+                                    <ion-icon name="add"></ion-icon> Add Expense
+                                </button>
+                            </form>
+                        </div>
+                        <div class="analytics-section">
+                            <div class="chart-container glass" style="height: 100%;">
+                                <h4 style="text-align:center; margin-bottom:0.5rem; font-weight:600; color:var(--text-secondary)">Category Distribution</h4>
+                                <canvas id="expensePieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-split" style="margin-bottom: 2rem;">
+                        <div class="analytics-section">
+                            <div class="chart-container glass" style="height: 100%;">
+                                <h4 style="text-align:center; margin-bottom:0.5rem; font-weight:600; color:var(--text-secondary)">Month-over-Month Spending</h4>
+                                <canvas id="expenseBarChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="analytics-section">
+                            <div class="chart-container glass" style="height: 100%;">
+                                <h4 style="text-align:center; margin-bottom:0.5rem; font-weight:600; color:var(--text-secondary)">Spending by Bank Account</h4>
+                                <canvas id="expenseBankChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="expense-list-container glass" style="margin-top: 2rem;">
+                        <h3 style="padding: 1.5rem 1.5rem 0 1.5rem;">Recent Expenses</h3>
+                        <div class="task-list" id="expense-list" style="padding: 1.5rem;">
+                            <!-- Expenses injected here -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
