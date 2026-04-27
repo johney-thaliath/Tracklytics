@@ -6,16 +6,16 @@ let expenses = JSON.parse(localStorage.getItem('tracklytics_expenses')) || [];
 let accounts = JSON.parse(localStorage.getItem('tracklytics_accounts')) || [];
 
 let currentExpenseFilter = 'all';
-
+const API_BASE = "https://tracklytics-2vd7.onrender.com";
 // --- BACKEND API FUNCTIONS ---
 
 async function fetchExpensesFromDB() {
-    const res = await fetch("http://localhost:3000/expenses");
+    const res = await fetch(`${API_BASE}/expenses`);
     return await res.json();
 }
 
 async function saveExpenseToDB(expense) {
-    await fetch("http://localhost:3000/add-expense", {
+    await fetch(`${API_BASE}/expenses`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -24,7 +24,7 @@ async function saveExpenseToDB(expense) {
     });
 }
 async function deleteExpenseFromDB(id) {
-    await fetch(`http://localhost:3000/delete-expense/${id}`, {
+    await fetch(`https://tracklytics-2vd7.onrender.com/delete-expense/${id}`), {
         method: "DELETE"
     });
 }
